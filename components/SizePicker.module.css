@@ -1,0 +1,118 @@
+.section {
+  width: 100%;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* Men's / Women's switch. Each option is 44px tall to stay an easy tap. */
+.toggle {
+  display: inline-flex;
+  padding: 2px;
+  border-radius: 24px;
+  background: #f0f0f0;
+}
+
+.toggleButton {
+  min-width: 80px;
+  height: 44px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 22px;
+  background: transparent;
+  color: #555;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.toggleButton[aria-pressed="true"] {
+  background: #111;
+  color: #fff;
+}
+
+.toggleButton:focus-visible,
+.size:focus-visible {
+  outline: 2px solid #1a56db;
+  outline-offset: 2px;
+}
+
+/*
+ * 5 columns of 48px across 343px leaves ~26px between buttons, which is room
+ * for the low-stock tag to sit under its button without touching its neighbours.
+ * The row gap holds the tag, so the tag never changes any button's size.
+ */
+.grid {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 20px;
+  display: grid;
+  grid-template-columns: repeat(5, 48px);
+  justify-content: space-between;
+  row-gap: 24px;
+}
+
+.cell {
+  position: relative;
+  width: 48px;
+  height: 48px;
+}
+
+.size {
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 1px solid #c8c8c8;
+  border-radius: 6px;
+  background: #fff;
+  color: #111;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.size[aria-pressed="true"] {
+  border-color: #111;
+  background: #111;
+  color: #fff;
+}
+
+/* Sold out: grey, plus two non-colour cues: a diagonal line and struck-through text. */
+.size:disabled {
+  border-color: #dadada;
+  background-color: #f2f2f2;
+  background-image: linear-gradient(
+    to top right,
+    transparent calc(50% - 1px),
+    #a3a3a3 calc(50% - 1px),
+    #a3a3a3 calc(50% + 1px),
+    transparent calc(50% + 1px)
+  );
+  color: #8f8f8f;
+  text-decoration: line-through;
+  cursor: not-allowed;
+}
+
+/* Positioned outside the button in the row gap, so it adds no size to the button. */
+.lowTag {
+  position: absolute;
+  top: calc(100% + 3px);
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 10px;
+  line-height: 16px;
+  font-weight: 600;
+  color: #b3261e;
+  pointer-events: none;
+}
