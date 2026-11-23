@@ -4,6 +4,9 @@ A Next.js (App Router) product page for the Nike Pegasus 43, built for a 375px-w
 The shoe name, price, colourway and all 26 sizes are read from
 [`data/nike_pegasus_size_stock.json`](data/nike_pegasus_size_stock.json) at build time.
 
+**Live page:** <https://bhawanasingore.github.io/nikesize/>. Every push to `main` rebuilds it with GitHub Pages
+(`.github/workflows/deploy.yml`).
+
 ## View it at phone width
 
 ```bash
