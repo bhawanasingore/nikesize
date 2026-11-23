@@ -7,6 +7,10 @@ The shoe name, price, colourway and all 26 sizes are read from
 **Live page:** <https://bhawanasingore.github.io/nikesize/>. Every push to `main` rebuilds it with GitHub Pages
 (`.github/workflows/deploy.yml`).
 
+**Speed and layout shift:** [`speed-budget.json`](speed-budget.json) sets the launch-check budget. It requires a
+score of at least 90, 0px of size-grid movement, and size buttons of at least 48px. The Slow 4G trace findings, every
+layout fix (fixed photo box, fixed price height) and the prompts used are in [`PERFORMANCE.md`](PERFORMANCE.md).
+
 ## View it at phone width
 
 ```bash
@@ -39,13 +43,14 @@ on a phone on the same Wi-Fi network.
 | --- | --- |
 | `product-page` | Page wrapper |
 | `product-header` | Name, price and colourway block |
-| `product-name`, `product-price`, `product-colorway` | Each value |
+| `product-name`, `price`, `product-colorway` | Each value |
 | `main-photo` | Main photo area |
 | `size-section` | Size picker section |
 | `size-system-toggle` | Men's/Women's toggle; options are `size-toggle-men` and `size-toggle-women` |
 | `size-grid` | The grid (`data-size-system` = `men` or `women`) |
 | `size-cell` | Each grid cell |
-| `size-button` | Each size button, with `data-sku`, `data-status` (`in_stock` / `low_stock` / `sold_out`), `data-size-men`, `data-size-women` |
+| `size-button` | Each in-stock or low-stock size button, with `data-sku`, `data-status` (`in_stock` / `low_stock`), `data-size-men`, `data-size-women` |
+| `size-button-sold-out` | Each sold-out size button: disabled, full size, same data attributes, `data-status="sold_out"` |
 | `low-stock-tag` | The 🔥 Low stock tag |
 
 ## Notes
@@ -53,7 +58,9 @@ on a phone on the same Wi-Fi network.
 - Size buttons are 48 × 48px, five to a row. The low-stock tag sits in the gap under its button, so it never changes a button's size.
 - Sold-out sizes are greyed out, disabled, and also marked with a diagonal line and struck-through text.
 - Pinch-zoom is turned off with the viewport tag and `touch-action`. iOS Safari can still allow zooming because Apple ignores `user-scalable=no`.
-- The photo area is a placeholder until product photos are supplied.
+- **Fixed photo box (layout-shift fix).** The main photo area is a fixed 280px-tall box, so its space is reserved
+  before any photo loads and a late photo can't push the size grid down. It's a placeholder until product photos are
+  supplied; real photos should fill the same box with `width`/`height` set.
 - **Price keeps its space (layout-shift fix).** The price box has a fixed size: 24px tall with a 24px line height, and at least 64px wide, which fits "140.00". The name/price row is centre-aligned rather than baseline-aligned, because an empty box on a baseline row sits lower and makes the row taller. So if the price text or its font arrives late, nothing above the size grid grows and the grid stays put.
   - Tested on Slow 4G (562.5 ms request delay, 1474.56 Kbps down, 675 Kbps up), 4x CPU slowdown, 375 × 812 at 3x, mobile on.
   - Before the fix, a late price moved the grid down 3px, and so did a late font swap.

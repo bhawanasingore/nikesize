@@ -11,7 +11,7 @@ export default function ProductPage() {
           {product.name}
         </h1>
         <p className={styles.meta}>
-          <span className={styles.price} data-testid="product-price">
+          <span className={styles.price} data-testid="price">
             {formatPrice(product.price)}
           </span>
           <span className={styles.colorway} data-testid="product-colorway">

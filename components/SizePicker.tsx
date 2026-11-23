@@ -71,7 +71,7 @@ export default function SizePicker({ sizes }: { sizes: SizeRow[] }) {
                 aria-label={`${prefix} ${label}${
                   soldOut ? ", sold out" : lowStock ? ", low stock" : ""
                 }`}
-                data-testid="size-button"
+                data-testid={soldOut ? "size-button-sold-out" : "size-button"}
                 data-sku={size.sku}
                 data-status={status}
                 data-size-men={formatSize(size.size_us_men)}
