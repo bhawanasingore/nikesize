@@ -16,20 +16,35 @@
   font-weight: 600;
 }
 
+/*
+ * Centre-aligned (not baseline) so an empty or late price box can't change the
+ * row's height: with baseline alignment an empty box sits lower and grows the row.
+ */
 .meta {
   margin-top: 4px;
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: center;
   gap: 4px 12px;
 }
 
+/*
+ * Fixed-size price box. It holds its 24px height (and enough width for
+ * "140.00") whether the price text or its font arrives late, so nothing
+ * above the size grid can grow and push the grid down.
+ */
 .price {
+  display: inline-block;
+  height: 24px;
+  min-width: 64px;
+  line-height: 24px;
   font-size: 18px;
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
 .colorway {
+  line-height: 24px;
   color: #555;
 }
 

@@ -54,6 +54,10 @@ on a phone on the same Wi-Fi network.
 - Sold-out sizes are greyed out, disabled, and also marked with a diagonal line and struck-through text.
 - Pinch-zoom is turned off with the viewport tag and `touch-action`. iOS Safari can still allow zooming because Apple ignores `user-scalable=no`.
 - The photo area is a placeholder until product photos are supplied.
+- **Price keeps its space (layout-shift fix).** The price box has a fixed size: 24px tall with a 24px line height, and at least 64px wide, which fits "140.00". The name/price row is centre-aligned rather than baseline-aligned, because an empty box on a baseline row sits lower and makes the row taller. So if the price text or its font arrives late, nothing above the size grid grows and the grid stays put.
+  - Tested on Slow 4G (562.5 ms request delay, 1474.56 Kbps down, 675 Kbps up), 4x CPU slowdown, 375 × 812 at 3x, mobile on.
+  - Before the fix, a late price moved the grid down 3px, and so did a late font swap.
+  - After the fix, both moved it 0px. A normal load also moved it 0px in 3 out of 3 runs, with no layout shifts recorded. The grid now starts at 454px.
 
 ## Original prompt
 
