@@ -62,11 +62,14 @@ jobs:
         env:
           URL: ${{ steps.url.outputs.url }}
         run: |
-          for i in $(seq 1 20); do
-            if curl -fsSL "$URL" | grep -q 'data-testid="size-grid"'; then echo "Live page is up"; exit 0; fi
+          for i in $(seq 1 12); do
+            RESULT=$(curl -sS -L -o page.html -w "%{http_code} %{url_effective} redirects=%{num_redirects}" "$URL" || true)
+            echo "Try $i: HTTP $RESULT"
+            if grep -q 'data-testid="size-grid"' page.html; then echo "Live page is up"; exit 0; fi
             sleep 15
           done
-          echo "::error::$URL did not serve the size grid. If Vercel Deployment Protection is on for this URL, put the public production domain on the README's first line."
+          echo "Page title: $(grep -o '<title>[^<]*</title>' page.html | head -n 1)"
+          echo "::error::$URL did not serve the size grid (last: HTTP $RESULT). A redirect to vercel.com/login or a 401 means Vercel Deployment Protection is on for this domain."
           exit 1
 
       - name: Run Lighthouse (mobile, Slow 4G, 4x CPU)
