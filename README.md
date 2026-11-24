@@ -2,10 +2,13 @@
 
 A Next.js (App Router) product page for the Nike Pegasus 43, built for a 375px-wide phone.
 The shoe name, price, colourway and all 26 sizes are read from
-[`data/nike_pegasus_size_stock.json`](data/nike_pegasus_size_stock.json) at build time.
+[`data/nike_pegasus_size_stock.json`](data/nike_pegasus_size_stock.json) at build time. That file now holds the
+**Pegasus Size and Stock Snapshot of 8 December 2026**, replacing the older 16 November list.
 
-**Live page:** <https://bhawanasingore.github.io/nikesize/>. Every push to `main` rebuilds it with GitHub Pages
-(`.github/workflows/deploy.yml`).
+**Hosting:** deployed on Vercel from this repo; every push to `main` redeploys. After each production deploy, a GitHub
+Action ([`lighthouse.yml`](.github/workflows/lighthouse.yml)) runs Lighthouse on the live vercel.app URL and commits
+the report to [`lighthouse/`](lighthouse/) ([summary](lighthouse/summary.md)). Commits that only change `lighthouse/`
+don't trigger a new deploy ([`vercel.json`](vercel.json)).
 
 **Speed and layout shift:** [`speed-budget.json`](speed-budget.json) sets the launch-check budget. It requires a
 score of at least 90, 0px of size-grid movement, and size buttons of at least 48px. The Slow 4G trace findings, every
@@ -66,7 +69,44 @@ on a phone on the same Wi-Fi network.
   - Before the fix, a late price moved the grid down 3px, and so did a late font swap.
   - After the fix, both moved it 0px. A normal load also moved it 0px in 3 out of 3 runs, with no layout shifts recorded. The grid now starts at 454px.
 
-## Original prompt
+## Vercel deploy notes (8 December snapshot)
+
+![Phone screenshot, 375 × 812 at 3x, US Men's 9.5 selected](docs/phone-375x812-size-9.5-selected.png)
+
+*Phone screenshot: 375 × 812 CSS px at 3x, US Men's 9.5 selected. Sold-out sizes are grey with a diagonal line.*
+
+**Sold-out sizes match the snapshot.** The snapshot marks 9 of the 26 sizes `sold_out`, each with `in_stock: false`
+and 0 pairs. The page shows exactly those 9 as sold out: each one is a full-size 48 × 48 CSS px button (above the
+44 × 44 minimum), grey, disabled, with a diagonal line and struck-through number, and `data-testid="size-button-sold-out"`.
+The other 17 sizes stay tappable.
+
+| US Men's | US Women's | EU | SKU | Pairs in snapshot |
+| --- | --- | --- | --- | --- |
+| 4.5 | 6 | 36.5 | `HV7521-001-045` | 0 |
+| 6 | 7.5 | 38.5 | `HV7521-001-060` | 0 |
+| 9 | 10.5 | 42.5 | `HV7521-001-090` | 0 |
+| 10 | 11.5 | 44 | `HV7521-001-100` | 0 |
+| 11.5 | 13 | 45.5 | `HV7521-001-115` | 0 |
+| 14 | 15.5 | 48.5 | `HV7521-001-140` | 0 |
+| 15 | 16.5 | 49.5 | `HV7521-001-150` | 0 |
+| 15.5 | 17 | 50 | `HV7521-001-155` | 0 |
+| 16 | 17.5 | 50.5 | `HV7521-001-160` | 0 |
+
+- **What changed from the 16 November list:** size 3.5 is no longer sold out (1 pair, now low stock), and sizes 4.5,
+  6, 9, 11.5, 14 and 15 are newly sold out.
+- **Low stock:** 7 sizes have 1–5 pairs and get the 🔥 Low stock tag: 3.5, 4, 5, 8.5, 13, 13.5 and 14.5.
+- **Checked twice:**
+  - `perf/check_page.py` reads the expected sold-out and low-stock sizes from the data file, so it follows the snapshot.
+  - The Lighthouse Action compares the live page's sold-out buttons with the file on every deploy, in
+    [`lighthouse/summary.md`](lighthouse/summary.md).
+
+**Prompt:**
+
+> Deploy the Pegasus 43 phone page to Vercel. Use the Pegasus Size and Stock Snapshot from 8 December 2026 for all 26 sizes, not the older 16 November list. Show sold_out sizes as full-size grey disabled buttons, at least 44 by 44 CSS pixels. Run Lighthouse in mobile mode (Slow 4G, CPU throttling) on the live vercel.app URL, not localhost, and save the report in the repo. Put the live URL on the first line of the README, commit a phone screenshot with a size selected, and add short notes with this prompt and how the sold-out sizes match the snapshot. Give me the live link when it's done
+
+## Original build prompt
+
+The sold-out and low-stock sizes named in this prompt come from the 16 November list, which the snapshot has replaced.
 
 > Build a Next.js (App Router) page for the Nike Pegasus 43 running shoe, made for a 375 CSS pixel wide phone. No horizontal scroll and no pinch-zoom.
 > Read the shoe name, price and all 26 sizes from the Pegasus 43 size and stock list file (nike_pegasus_size_stock.json). Don't type them in by hand. Use display_order for the order.

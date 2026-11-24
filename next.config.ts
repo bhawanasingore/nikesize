@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
-// On GitHub Pages the site lives under /<repo-name>, so the deploy workflow
-// sets PAGES_BASE_PATH. Locally it's empty and the page runs at /.
+// Vercel and local runs serve the page at /. PAGES_BASE_PATH is only for hosting under a sub-path
+// (for example GitHub Pages at /<repo-name>); the perf scripts use it to test that layout.
 const basePath = process.env.PAGES_BASE_PATH ?? "";
 
 const nextConfig: NextConfig = {

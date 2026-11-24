@@ -4,8 +4,8 @@ The size grid moves **0px** while the page loads on a Slow 4G phone. That's true
 price or its font arrives late. Lighthouse scores the page 99–100 under the launch profile's settings, so the values
 in [`speed-budget.json`](speed-budget.json) all pass.
 
-All numbers below come from the GitHub Pages build of this repo, served locally without compression. The live page
-should load a little faster. Measured 23 November 2026.
+All numbers below come from the static build of this repo, served locally without compression, using the 16 November
+stock list. The live Vercel page is measured separately after every deploy: see [`lighthouse/summary.md`](lighthouse/summary.md). Measured 23 November 2026.
 
 ## Settings used
 
@@ -92,7 +92,7 @@ in-stock and low-stock buttons only. All five watched elements are on the page: 
   keeps its size and the photo becomes the largest element.
 - **Not Chrome DevTools MCP:** that tool wasn't connected, so the traces were recorded in Chrome directly through the
   same DevTools controls (Chrome DevTools Protocol, via Playwright).
-- **Re-run on the live page:** do this once GitHub Pages is turned on.
+- **Live page:** Lighthouse runs on the live Vercel URL after every deploy; results are in [`lighthouse/`](lighthouse/).
 
 ## Prompts used
 

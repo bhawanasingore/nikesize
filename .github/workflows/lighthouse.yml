@@ -1,0 +1,84 @@
+name: Lighthouse on the live Vercel page
+
+# Runs after every successful Vercel production deploy, against the live vercel.app URL
+# (never localhost), and commits the report to lighthouse/.
+on:
+  deployment_status:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: Live URL to test (defaults to the URL on the README's first line)
+        required: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: lighthouse
+  cancel-in-progress: false
+
+jobs:
+  lighthouse:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.deployment_status.state == 'success' &&
+       github.event.deployment.environment == 'Production')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Pick the live URL
+        id: url
+        env:
+          INPUT_URL: ${{ github.event.inputs.url }}
+          DEPLOY_URL: ${{ github.event.deployment_status.environment_url }}
+        run: |
+          README_URL=$(head -n 1 README.md | grep -oE 'https://[A-Za-z0-9.-]+\.vercel\.app/?' | head -n 1 || true)
+          URL="${INPUT_URL:-${README_URL:-$DEPLOY_URL}}"
+          case "$URL" in
+            https://*.vercel.app|https://*.vercel.app/) ;;
+            *) echo "::error::No vercel.app URL found (got '$URL')"; exit 1 ;;
+          esac
+          echo "Testing $URL"
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for the live page to serve the shoe page
+        env:
+          URL: ${{ steps.url.outputs.url }}
+        run: |
+          for i in $(seq 1 20); do
+            if curl -fsSL "$URL" | grep -q 'data-testid="size-grid"'; then echo "Live page is up"; exit 0; fi
+            sleep 15
+          done
+          echo "::error::$URL did not serve the size grid. If Vercel Deployment Protection is on for this URL, put the public production domain on the README's first line."
+          exit 1
+
+      - name: Run Lighthouse (mobile, Slow 4G, 4x CPU)
+        env:
+          URL: ${{ steps.url.outputs.url }}
+        run: |
+          mkdir -p lighthouse
+          npx --yes lighthouse@13 "$URL" \
+            --config-path=perf/lh-config.cjs \
+            --output=json --output=html \
+            --output-path=lighthouse/report \
+            --chrome-flags="--headless=new --no-sandbox" --quiet
+          mv lighthouse/report.report.json lighthouse/mobile-slow4g.json
+          mv lighthouse/report.report.html lighthouse/mobile-slow4g.html
+          node perf/live-summary.mjs "$URL" lighthouse/mobile-slow4g.json "$GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Commit the report
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add lighthouse
+          git diff --cached --quiet && { echo "No changes"; exit 0; }
+          git commit -m "Lighthouse report for the live Vercel page [skip ci]"
+          for i in 1 2 3; do git pull --rebase origin main && git push origin HEAD:main && exit 0; sleep 5; done
+          exit 1

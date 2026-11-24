@@ -30,4 +30,6 @@ p {
 
 button {
   font: inherit;
+  /* Mobile browsers tint a tapped button blue; the buttons have their own pressed styles. */
+  -webkit-tap-highlight-color: transparent;
 }
