@@ -3,6 +3,8 @@ name: Lighthouse on the live Vercel page
 # Runs after every successful Vercel production deploy, against the live vercel.app URL
 # (never localhost), and commits the report to lighthouse/.
 on:
+  # Vercel reports each deploy as a commit status named "Vercel".
+  status:
   deployment_status:
   workflow_dispatch:
     inputs:
@@ -19,9 +21,17 @@ concurrency:
 
 jobs:
   lighthouse:
+    # Skips the report's own commits (Vercel ignores those builds), so this can't loop.
     if: >-
       github.event_name == 'workflow_dispatch' ||
-      (github.event.deployment_status.state == 'success' &&
+      (github.event_name == 'status' &&
+       github.event.context == 'Vercel' &&
+       github.event.state == 'success' &&
+       github.event.description == 'Deployment has completed' &&
+       contains(github.event.branches.*.name, 'main') &&
+       !contains(github.event.commit.commit.message, 'Lighthouse report for the live Vercel page')) ||
+      (github.event_name == 'deployment_status' &&
+       github.event.deployment_status.state == 'success' &&
        github.event.deployment.environment == 'Production')
     runs-on: ubuntu-latest
     steps:
